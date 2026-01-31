@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { ArrowLeft, MessageSquare, Phone, Sparkles } from "lucide-react";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default async function CharacterPage({
   params,
 }: {

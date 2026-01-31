@@ -4,6 +4,9 @@ import Link from "next/link";
 import { prisma } from "@/lib/db";
 import { MessageSquare, Plus, Sparkles } from "lucide-react";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   const { userId } = await auth();
 
@@ -111,7 +114,7 @@ export default async function Home() {
           <section className="mb-12">
             <h3 className="text-2xl font-bold mb-6">Continue Your Conversations</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {recentConversations.map((conversation) => (
+              {recentConversations.map((conversation: any) => (
                 <Link
                   key={conversation.id}
                   href={`/chat/${conversation.id}`}
@@ -148,7 +151,7 @@ export default async function Home() {
             </Link>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {publicCharacters.map((character) => (
+            {publicCharacters.map((character: any) => (
               <Link
                 key={character.id}
                 href={`/character/${character.id}`}

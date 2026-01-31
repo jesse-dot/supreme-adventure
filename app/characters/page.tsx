@@ -4,6 +4,9 @@ import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { ArrowLeft, Sparkles, Search } from "lucide-react";
 
+// Force dynamic rendering
+export const dynamic = 'force-dynamic';
+
 export default async function CharactersPage() {
   const { userId } = await auth();
 
@@ -63,7 +66,7 @@ export default async function CharactersPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {characters.map((character) => (
+          {characters.map((character: any) => (
             <Link
               key={character.id}
               href={`/character/${character.id}`}

@@ -8,6 +8,8 @@ const nextConfig = {
       },
     ],
   },
+  // Disable static optimization to avoid Clerk validation during build
+  output: 'standalone',
 }
 
 module.exports = nextConfig

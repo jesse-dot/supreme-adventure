@@ -111,7 +111,13 @@ cd supreme-adventure
 npm install
 ```
 
-3. **Set up Clerk Authentication** (REQUIRED):
+3. **⚠️ IMPORTANT: Generate Prisma Client**:
+```bash
+npx prisma generate
+```
+**This step is required!** If you skip this, you'll get a "Cannot find module '.prisma/client'" error after login.
+
+4. **Set up Clerk Authentication** (REQUIRED):
 
    a. Go to [clerk.com](https://clerk.com) and create a free account
    
@@ -125,7 +131,7 @@ npm install
       - After sign-in URL: `/`
       - After sign-up URL: `/`
 
-4. **Configure environment variables**:
+5. **Configure environment variables**:
 ```bash
 cp .env.example .env
 ```
@@ -150,18 +156,17 @@ DATABASE_URL="file:./dev.db"
 STABLE_HOARD_API_KEY=
 ```
 
-5. **Set up the database**:
+6. **Set up the database**:
 ```bash
-npx prisma generate
 npx prisma migrate dev
 ```
 
-6. **Run the development server**:
+7. **Run the development server**:
 ```bash
 npm run dev
 ```
 
-7. **Open your browser**:
+8. **Open your browser**:
    Navigate to [http://localhost:3000](http://localhost:3000)
 
 ## 🎮 How to Use
@@ -258,6 +263,38 @@ npx prisma generate            # Regenerate Prisma Client
 - **DigitalOcean App Platform**: Simple deployment
 
 ## 🐛 Troubleshooting
+
+### "Cannot find module '.prisma/client'" Error
+**This is the most common error!** It occurs when the Prisma Client hasn't been generated.
+
+**Solution:**
+```bash
+npx prisma generate
+```
+
+After running this command, restart your development server:
+```bash
+# Stop the server (Ctrl+C) then restart
+npm run dev
+```
+
+**If the error persists:**
+1. Delete the `node_modules` folder and `package-lock.json`:
+   ```bash
+   rm -rf node_modules package-lock.json
+   ```
+2. Reinstall dependencies:
+   ```bash
+   npm install
+   ```
+3. Generate Prisma Client again:
+   ```bash
+   npx prisma generate
+   ```
+4. Restart the development server:
+   ```bash
+   npm run dev
+   ```
 
 ### "Publishable key not valid" Error
 - Make sure you've copied the correct keys from your Clerk dashboard

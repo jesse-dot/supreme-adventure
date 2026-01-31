@@ -1,0 +1,199 @@
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import Link from "next/link";
+import { prisma } from "@/lib/db";
+import { MessageSquare, Plus, Sparkles } from "lucide-react";
+
+export default async function Home() {
+  const { userId } = await auth();
+
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  // Get or create user in database
+  let user = await prisma.user.findUnique({
+    where: { clerkId: userId },
+  });
+
+  if (!user) {
+    const clerkUser = await (await import("@clerk/nextjs/server")).currentUser();
+    if (clerkUser) {
+      user = await prisma.user.create({
+        data: {
+          clerkId: userId,
+          email: clerkUser.emailAddresses[0]?.emailAddress || "",
+          username: clerkUser.username || clerkUser.firstName || "User",
+          imageUrl: clerkUser.imageUrl,
+        },
+      });
+    }
+  }
+
+  // Get public characters for discovery
+  const publicCharacters = await prisma.character.findMany({
+    where: { isPublic: true },
+    orderBy: { createdAt: "desc" },
+    take: 12,
+    include: {
+      user: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+
+  // Get user's recent conversations
+  const recentConversations = await prisma.conversation.findMany({
+    where: { userId: user?.id },
+    orderBy: { updatedAt: "desc" },
+    take: 5,
+    include: {
+      character: true,
+      messages: {
+        orderBy: { createdAt: "desc" },
+        take: 1,
+      },
+    },
+  });
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Header */}
+      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-8 w-8 text-blue-600" />
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                AI Chat
+              </h1>
+            </div>
+            <nav className="flex items-center gap-4">
+              <Link
+                href="/characters"
+                className="text-gray-600 hover:text-gray-900 font-medium"
+              >
+                Discover
+              </Link>
+              <Link
+                href="/my-characters"
+                className="text-gray-600 hover:text-gray-900 font-medium"
+              >
+                My Characters
+              </Link>
+              <Link
+                href="/create-character"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Create Character
+              </Link>
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        {/* Hero Section */}
+        <section className="text-center py-12">
+          <h2 className="text-5xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            Chat with AI Characters
+          </h2>
+          <p className="text-xl text-gray-600 mb-8">
+            Create, discover, and chat with unique AI personalities
+          </p>
+        </section>
+
+        {/* Recent Conversations */}
+        {recentConversations.length > 0 && (
+          <section className="mb-12">
+            <h3 className="text-2xl font-bold mb-6">Continue Your Conversations</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recentConversations.map((conversation) => (
+                <Link
+                  key={conversation.id}
+                  href={`/chat/${conversation.id}`}
+                  className="block p-4 bg-white rounded-lg border hover:shadow-lg transition"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-400 to-purple-400 flex items-center justify-center text-white font-bold">
+                      {conversation.character.name[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-semibold truncate">
+                        {conversation.character.name}
+                      </h4>
+                      <p className="text-sm text-gray-500 line-clamp-2">
+                        {conversation.messages[0]?.content || conversation.character.greeting}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* Discover Characters */}
+        <section>
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-2xl font-bold">Discover Characters</h3>
+            <Link
+              href="/characters"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              View All →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {publicCharacters.map((character) => (
+              <Link
+                key={character.id}
+                href={`/character/${character.id}`}
+                className="block group"
+              >
+                <div className="bg-white rounded-lg border hover:shadow-xl transition-all duration-200 overflow-hidden">
+                  <div className="aspect-square bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center text-white">
+                    <span className="text-6xl font-bold">
+                      {character.name[0]}
+                    </span>
+                  </div>
+                  <div className="p-4">
+                    <h4 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition">
+                      {character.name}
+                    </h4>
+                    <p className="text-sm text-gray-500 mb-2">
+                      by {character.user.username}
+                    </p>
+                    <p className="text-sm text-gray-600 line-clamp-2">
+                      {character.description}
+                    </p>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+
+          {publicCharacters.length === 0 && (
+            <div className="text-center py-12 bg-white rounded-lg border">
+              <MessageSquare className="h-16 w-16 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold mb-2">No characters yet</h3>
+              <p className="text-gray-600 mb-4">
+                Be the first to create a character!
+              </p>
+              <Link
+                href="/create-character"
+                className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+              >
+                <Plus className="h-5 w-5" />
+                Create Your First Character
+              </Link>
+            </div>
+          )}
+        </section>
+      </main>
+    </div>
+  );
+}

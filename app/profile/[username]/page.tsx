@@ -2,7 +2,6 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
-import { Header } from "@/components/Header";
 import { MessageSquare } from "lucide-react";
 
 // Force dynamic rendering
@@ -54,8 +53,6 @@ export default async function ProfilePage({
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <Header />
-
       <main className="container mx-auto px-4 py-8 max-w-6xl">
         {/* Profile Header */}
         <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-8 mb-8">

@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useUser } from "@clerk/nextjs";
-import { Header } from "@/components/Header";
 import { ArrowLeft, Save } from "lucide-react";
 import Link from "next/link";
 
@@ -67,7 +66,6 @@ export default function EditProfilePage() {
   if (!isLoaded || isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-        <Header />
         <div className="container mx-auto px-4 py-8 max-w-2xl">
           <div className="text-center">Loading...</div>
         </div>
@@ -77,8 +75,6 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <Header />
-
       <main className="container mx-auto px-4 py-8 max-w-2xl">
         <div className="mb-6">
           <Link

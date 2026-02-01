@@ -2,7 +2,8 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
-import { ArrowLeft, Sparkles, Search } from "lucide-react";
+import { Header } from "@/components/Header";
+import { Sparkles, Search } from "lucide-react";
 
 // Force dynamic rendering
 export const dynamic = 'force-dynamic';
@@ -21,6 +22,7 @@ export default async function CharactersPage() {
       user: {
         select: {
           username: true,
+          imageUrl: true,
         },
       },
       _count: {
@@ -32,26 +34,8 @@ export default async function CharactersPage() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
-      <header className="border-b bg-white/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link
-                href="/"
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
-              >
-                <ArrowLeft className="h-5 w-5" />
-                Back
-              </Link>
-              <div className="flex items-center gap-2">
-                <Sparkles className="h-6 w-6 text-blue-600" />
-                <h1 className="text-xl font-bold">Discover Characters</h1>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <Header />
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
@@ -60,7 +44,7 @@ export default async function CharactersPage() {
             <input
               type="text"
               placeholder="Search characters..."
-              className="w-full pl-12 pr-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
             />
           </div>
         </div>
@@ -72,21 +56,32 @@ export default async function CharactersPage() {
               href={`/character/${character.id}`}
               className="block group"
             >
-              <div className="bg-white rounded-lg border hover:shadow-xl transition-all duration-200 overflow-hidden">
+              <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 hover:shadow-xl transition-all duration-200 overflow-hidden">
                 <div className="aspect-square bg-gradient-to-br from-blue-400 via-purple-400 to-pink-400 flex items-center justify-center text-white">
                   <span className="text-6xl font-bold">{character.name[0]}</span>
                 </div>
                 <div className="p-4">
-                  <h4 className="font-bold text-lg mb-1 group-hover:text-blue-600 transition">
+                  <h4 className="font-bold text-lg mb-1 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition dark:text-white">
                     {character.name}
                   </h4>
-                  <p className="text-sm text-gray-500 mb-2">
+                  <Link
+                    href={`/profile/${character.user.username}`}
+                    className="text-sm text-gray-500 dark:text-gray-400 mb-2 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-1"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {character.user.imageUrl && (
+                      <img
+                        src={character.user.imageUrl}
+                        alt={character.user.username}
+                        className="w-4 h-4 rounded-full"
+                      />
+                    )}
                     by {character.user.username}
-                  </p>
-                  <p className="text-sm text-gray-600 line-clamp-2 mb-3">
+                  </Link>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 line-clamp-2 mb-3">
                     {character.description}
                   </p>
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
                     <span>❤️ {character._count.favorites} favorites</span>
                   </div>
                 </div>
@@ -96,13 +91,13 @@ export default async function CharactersPage() {
         </div>
 
         {characters.length === 0 && (
-          <div className="text-center py-12">
+          <div className="text-center py-12 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
             <Sparkles className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold mb-2">No public characters yet</h3>
-            <p className="text-gray-600 mb-4">Be the first to create and share a character!</p>
+            <h3 className="text-xl font-semibold mb-2 dark:text-white">No public characters yet</h3>
+            <p className="text-gray-600 dark:text-gray-300 mb-4">Be the first to create and share a character!</p>
             <Link
               href="/create-character"
-              className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+              className="inline-block bg-blue-600 dark:bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-700 dark:hover:bg-blue-600 transition"
             >
               Create Character
             </Link>

@@ -1,6 +1,6 @@
 # AI Chat Website
 
-A modern AI chat application similar to Character.AI, featuring community-made characters, text-based conversations, and audio call capabilities.
+A modern AI chat application similar to Character.AI, featuring community-made characters, text-based conversations, audio call capabilities, dark mode, and user profiles.
 
 ## 🎯 Features Implemented
 
@@ -31,21 +31,37 @@ A modern AI chat application similar to Character.AI, featuring community-made c
   - Protected routes and API endpoints
   - Automatic user synchronization with database
 
+- **User Profiles** 👤
+  - Customizable user profiles with bio, username, and profile picture
+  - Profile pages showing user's public characters
+  - Edit profile functionality
+  - Clickable creator profiles on character pages
+  - Profile picture display on character cards
+
+- **Dark Mode** 🌓
+  - Full dark mode support across all pages
+  - Toggle between light and dark themes
+  - Persisted theme preference in localStorage
+  - Automatic system preference detection
+  - Smooth theme transitions
+
 - **Community Features** 👥
   - Public character gallery
   - Character favorites system
   - Character statistics (chat count, favorites)
   - User-created character collections
+  - Creator attribution on all characters
 
 ## 🛠️ Tech Stack
 
 - **Frontend**: Next.js 14+ (App Router), React 19, TypeScript
-- **Styling**: Tailwind CSS v3
+- **Styling**: Tailwind CSS v3 with dark mode support
 - **Authentication**: Clerk
 - **Database**: Prisma v7 with SQLite (LibSQL adapter)
 - **AI**: Stable Hoard Text Generation API (with fallback simulation)
 - **UI Components**: Lucide React icons
 - **Real-time**: Server-side rendering with streaming
+- **Theme Management**: React Context API with localStorage
 
 ## 📁 Project Structure
 
